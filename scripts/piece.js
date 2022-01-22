@@ -11,7 +11,7 @@ class Piece {
     if (this.type === '') return '';
 
     // Change the path depending on the color and piece
-    let path = '/assets/' + this.type;
+    let path = 'assets/' + this.type;
     if (this.color === colors.dark) path += 'b';
     else path += 'w';
 

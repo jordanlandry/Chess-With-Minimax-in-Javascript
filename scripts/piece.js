@@ -11,7 +11,7 @@ class Piece {
     if (this.type === '') return '';
 
     // Change the path depending on the color and piece
-    let path = 'assets/' + this.type;
+    let path = 'assets/' + this.type.toLowerCase();
     if (this.color === colors.dark) path += 'b';
     else path += 'w';
 
@@ -20,6 +20,7 @@ class Piece {
 
     let img = new Image();
     img.src = path;
+    console.log(path);
 
     return img;
   }
@@ -63,7 +64,6 @@ class Piece {
         this.available.push([this.x + 2, this.y - 1]);
         this.available.push([this.x + 2, this.y + 1]);
         this.available.push([this.x - 2, this.y + 1]);
-
     }
 
     this.showAvailableMoves(this.available);

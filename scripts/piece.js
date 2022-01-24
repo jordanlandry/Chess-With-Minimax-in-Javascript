@@ -5,6 +5,7 @@ class Piece {
     this.type = type;
     this.color = color;
     this.available = [];
+    this.kill = [];
   }
 
   getImage() {
@@ -20,7 +21,6 @@ class Piece {
 
     let img = new Image();
     img.src = path;
-    console.log(path);
 
     return img;
   }
@@ -33,10 +33,16 @@ class Piece {
       case 'p':
         // Go a different direction depending on the color
         if (this.color === colors.dark) {
+          if (this.y === 1) this.available.push([this.x, this.y + 2]);    // First move
           this.available.push([this.x, this.y + 1]);
-        } else this.available.push([this.x, this.y - 1]);
-        break;
+        } 
 
+        else {
+          if (this.y === 6) this.available.push([this.x, this.y - 2]);    // First move
+          this.available.push([this.x, this.y - 1]);
+        }
+
+        break;
       case 'k':
       case 'r':
       case 'q':
@@ -44,7 +50,6 @@ class Piece {
         this.available.push([this.x, this.y + 1]);
         this.available.push([this.x - 1, this.y]);
         this.available.push([this.x, this.y - 1]);
-        break;
 
       case 'q':
       case 'k':
@@ -54,7 +59,7 @@ class Piece {
         this.available.push([this.x - 1, this.y + 1]);
         this.available.push([this.x - 1, this.y - 1]);
         break;
-      
+
       case 'n':
         this.available.push([this.x + 1, this.y - 2]);
         this.available.push([this.x - 1, this.y - 2]);
@@ -66,14 +71,63 @@ class Piece {
         this.available.push([this.x - 2, this.y + 1]);
     }
 
+    // Remove incorrect spots
+    let newAvailable = [];
+
+    for (let i = 0; i < this.available.length; i++) {
+      let x = this.available[i][0];
+      let y = this.available[i][1];
+
+      if (x < 0 || x >= GRIDCOUNT || y < 0 || y >= GRIDCOUNT) continue;       // Out of bounds
+      if (board[x][y] !== '' && board[x][y].color === this.color) continue;   // Teammate is there
+
+      newAvailable.push( [x, y] );
+    }
+
+    this.available = newAvailable;
+
+    // Show the spots
     this.showAvailableMoves(this.available);
+  }
+
+  generateKillMoves() {
+    this.kill = [];   // Reset the kill array
+
+    // Run through available spots
+    for (let i = 0; i < this.available.length; i++) {
+      let x = this.available[i][0];
+      let y = this.available[i][1];
+
+      if (board[x][y] !== '') this.kill.push([x, y]);
+    }
+
+    this.showKillMoves(this.kill);
+
+    
+  }
+
+  showKillMoves(kill) {
+    for (let i = 0; i < kill.length; i++) {
+      let x = kill[i][0];
+      let y = kill[i][1];
+
+      
+      drawRect(x * w, y * w, w, w, colors.overtake);
+    }
+  }
+
+  kill() {
+
   }
 
   showAvailableMoves(available) {
     // TODO Show the available moves using a different color
     for (let i = 0; i < available.length; i++) {
-      context.fillStyle = colors.available;
-      drawRect(available[i][0] * w, available[i][1] * w, w, w);
+      let x = available[i][0];
+      let y = available[i][1];
+      
+      // Show the available spot if there isn't an empty piece there
+      if (board[x][y] === '') drawRect(x * w, y * w, w, w, colors.available);
     }
   }
 

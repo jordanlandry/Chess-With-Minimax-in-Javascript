@@ -13,14 +13,14 @@ var pieces = [];
 const GRIDCOUNT = 8;
 const w = WIDTH / GRIDCOUNT;    // Size of each grid
 const STARTINGPOS = [
-  [ 'N','P','','','','','p','n'],
   [ 'R','P','','','','','p','r'],
+  [ 'N','P','','','','','p','n'],
   [ 'B','P','','','','','p','b'],
   [ 'Q','P','','','','','p','q'],
   [ 'K','P','','','','','p','k'],
   [ 'B','P','','','','','p','b'],
-  [ 'R','P','','','','','p','r'],
   [ 'N','P','','','','','p','n'],
+  [ 'R','P','','','','','p','r'],
 ];
 
 const colors = {
@@ -55,9 +55,14 @@ canvas.addEventListener("click", function(e){
   let piece = board[xPos][yPos];
   if (firstClick) {
     if (piece === '') return;
+
     pieceX = xPos;
     pieceY = yPos;
+
     selectPiece(xPos, yPos);
+
+    // If there are no avialable spots then do nothing
+    if (piece.available.length === 0) return;
   }
 
   else {
@@ -73,6 +78,7 @@ canvas.addEventListener("click", function(e){
       }
     }
     
+    // Clear the spot visually
     for (let i = 0; i < piece.available.length; i++) {
       clearGridSpot(piece.available[i][0], piece.available[i][1]);
     }
@@ -110,6 +116,9 @@ function clearGridSpot(x, y) {
   else color = colors.light;
 
   drawRect(x * w, y * w, w, w, color);
+
+  
+  if (board.length !== 0 && board[x][y] !== '') board[x][y].show();
 }
 
 // Initialize the pieces
@@ -172,6 +181,7 @@ function placePiece(piece, x, y) {
 function selectPiece(x, y) {
   let piece = board[x][y];
   piece.generateAvailableMoves();
+  piece.generateKillMoves();
 }
 
 setup();

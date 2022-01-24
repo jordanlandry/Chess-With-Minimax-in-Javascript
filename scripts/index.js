@@ -13,14 +13,14 @@ var pieces = [];
 const GRIDCOUNT = 8;
 const w = WIDTH / GRIDCOUNT;    // Size of each grid
 const STARTINGPOS = [
-  [ 'R','P','','','','','p','r'],
-  [ 'N','P','','','','','p','n'],
-  [ 'B','P','','','','','p','b'],
-  [ 'Q','P','','','','','p','q'],
-  [ 'K','P','','','','','p','k'],
-  [ 'B','P','','','','','p','b'],
-  [ 'N','P','','','','','p','n'],
-  [ 'R','P','','','','','p','r'],
+  [ 'R','P','','','','','p','r' ],
+  [ 'N','P','','','','','p','n' ],
+  [ 'B','P','','','','','p','b' ],
+  [ 'Q','P','','','','','p','q' ],
+  [ 'K','P','','','','','p','k' ],
+  [ 'B','P','','','','','p','b' ],
+  [ 'N','P','','','','','p','n' ],
+  [ 'R','P','','','','','p','r' ],
 ];
 
 const colors = {
@@ -89,6 +89,7 @@ canvas.addEventListener("click", function(e){
 
 });
 
+
 function setup() {
   canvas.setAttribute("width", WIDTH);
   canvas.setAttribute("height", HEIGHT);
@@ -116,8 +117,8 @@ function clearGridSpot(x, y) {
   else color = colors.light;
 
   drawRect(x * w, y * w, w, w, color);
-
   
+  // Show the piece of the board on top of the grid space
   if (board.length !== 0 && board[x][y] !== '') board[x][y].show();
 }
 
@@ -160,9 +161,18 @@ function updatePieces() {
 
 // Placing the piece in the new position
 function placePiece(piece, x, y) {
+  if (piece.type.toLowerCase() === 'k') {
+    // Castle Right
+    if (x === piece.x + 2 && board[x + 1][y].type.toLowerCase() === 'r') piece.castle('right');
+
+    // Castle Left
+    if (x === piece.x - 2 && board[x - 2][y].type.toLowerCase() === 'r') piece.castle('left');
+  } 
+
   board[piece.x][piece.y] = '';
   board[x][y] = piece;
-  
+
+
   // Cover the previous spot with a new square
   clearGridSpot(piece.x, piece.y);
 
@@ -170,6 +180,7 @@ function placePiece(piece, x, y) {
   piece.y = y;
 
   piece.show();
+  piece.moved = true;
 
   // Clear the grid spots for the available slots
   for (let i = 0; i < piece.available.length; i++) {
